@@ -6,15 +6,15 @@ namespace ECommerce.RestApi.Models
     [Serializable]
     public class Cart
     {
-        [BsonId, BsonElement("_id"), BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-        [BsonElement("userId"), BsonRepresentation(BsonType.String)]
-        public string UserId { get; set; }
+        [BsonElement("items")]
+        public List<CartItem> Items { get; set; } = new List<CartItem>();
 
-        [BsonIgnore]
+        
+        [BsonElement(elementName: "totalItemCount")]
+        public int TotalItemCount { get; set; }
+
+        [BsonIgnore]//msercan todo : delete this. This information should be in the dto object.
         public decimal TotalPrice { get; set; }
 
-        [BsonIgnore]
-        public List<CartItem> Products { get; set; }
     }
 }

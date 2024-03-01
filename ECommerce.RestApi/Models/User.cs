@@ -9,17 +9,26 @@ namespace ECommerce.RestApi.Models
         [BsonId, BsonElement("_id"), BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        [BsonElement(elementName: "username"), BsonRepresentation(BsonType.String)]
+        [BsonElement("username")]
         public string Username { get; set; }
-        [BsonElement(elementName: "password"), BsonRepresentation(BsonType.String)]
+        [BsonElement("password")]
         public string Password { get; set; }
-        [BsonElement(elementName: "firstname"), BsonRepresentation(BsonType.String)]
+        [BsonElement("firstName")]
         public string FirstName { get; set; }
-        [BsonElement(elementName: "lastname"), BsonRepresentation(BsonType.String)]
+        [BsonElement("lastName")]
         public string LastName { get; set; }
-        [BsonElement(elementName: "email"), BsonRepresentation(BsonType.String)]
+        [BsonElement("email")]
         public string Email { get; set; }
-        [BsonElement(elementName: "adress"), BsonRepresentation(BsonType.String)]
-        public string Address { get; set; }
+        [BsonElement("addresses")]
+        public List<Address> Addresses { get; set; } = new List<Address>();
+
+        [BsonElement("favorites")]
+        public List<string> Favorites { get; set; } = new List<string>();
+
+        [BsonElement(elementName: "cart")]
+        public Cart Cart { get; set; } = new Cart();    
+
+        [BsonElement("orders")]
+        public List<Order> Orders { get; set; } = new List<Order>();    
     }
 }

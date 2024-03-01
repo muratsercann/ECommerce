@@ -23,14 +23,22 @@ namespace ECommerce.RestApi.Services
             return category;
         }
 
-        public async Task<Category> DeleteAsync(Category category)
+        public async Task<bool> DeleteAsync(string categoryId)
         {
-            throw new NotImplementedException();
+            var filter = Builders<Category>.Filter.Eq(c => c.Id, categoryId);
+            var result = await _mongoContext.Categories.DeleteOneAsync(filter);
+            return result.IsAcknowledged;
         }
 
         public async Task<List<Category>> GetCategoriesAsync()
         {
             return await _mongoContext.Categories.AsQueryable().ToListAsync();
+        }
+
+        public async Task<Category> GetCategoryAsync(string categoryId)
+        {
+            var filter = Builders<Category>.Filter.Eq(c => c.Id, categoryId);
+            return await _mongoContext.Categories.Find(filter).FirstOrDefaultAsync();
         }
 
         public async Task<long> GetCategoryCountAsync()

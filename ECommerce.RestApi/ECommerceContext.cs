@@ -24,11 +24,9 @@ namespace ECommerce.RestApi
         public IMongoCollection<Product> Products => _database.GetCollection<Product>(GetCollectionName<Product>());
         public IMongoCollection<Category> Categories => _database.GetCollection<Category>(GetCollectionName<Category>());
         public IMongoCollection<Order> Orders => _database.GetCollection<Order>(GetCollectionName<Order>());
-        public IMongoCollection<OrderDetail> OrderDetails => _database.GetCollection<OrderDetail>(GetCollectionName<OrderDetail>());
         public IMongoCollection<Cart> Carts => _database.GetCollection<Cart>(GetCollectionName<Cart>());
         public IMongoCollection<CartItem> CartItems => _database.GetCollection<CartItem>(GetCollectionName<CartItem>());
         
-
     }
 
     

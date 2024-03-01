@@ -6,13 +6,7 @@ namespace ECommerce.RestApi.Models
     [Serializable]
     public class CartItem
     {
-        [BsonId, BsonElement("_id"), BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-        
-        [BsonElement("cartId"), BsonRepresentation(BsonType.String)]
-        public string CartId { get; set; }
-        
-        [BsonElement( "productId"), BsonRepresentation(BsonType.String)]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string ProductId { get; set; }
         
         [BsonElement("quantity"), BsonRepresentation(BsonType.Int32)]

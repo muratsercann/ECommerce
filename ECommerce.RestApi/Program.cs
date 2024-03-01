@@ -16,8 +16,6 @@ builder.Services.AddSingleton<ECommerceContext>();
 builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<ICategoryService,CategoryService>();
 builder.Services.AddScoped<IProductService,ProductService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<ICartItemService, CartItemService>();
 
 
 builder.Services.AddControllers();
@@ -28,12 +26,12 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
 
-    await SeedData.InitializeAsync(services); 
-}
+//    await SeedData.InitializeAsync(services); 
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
