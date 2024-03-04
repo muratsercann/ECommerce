@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.RestApi", "ECommerce.RestApi\ECommerce.RestApi.csproj", "{EF7C3682-1ECC-4841-B1BE-187E6743B23A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.RestApi", "ECommerce.RestApi\ECommerce.RestApi.csproj", "{EF7C3682-1ECC-4841-B1BE-187E6743B23A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

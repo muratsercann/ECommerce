@@ -14,7 +14,7 @@ namespace ECommerce.RestApi.Controllers
         private readonly IProductService _product;
         private readonly ICategoryService _categoryService;
 
-        public CategoryController(ILogger<CategoryController> logger,IProductService productService, ICategoryService categoryService)
+        public CategoryController(ILogger<CategoryController> logger, IProductService productService, ICategoryService categoryService)
         {
             _logger = logger;
             _productService = productService;
@@ -35,16 +35,16 @@ namespace ECommerce.RestApi.Controllers
         /// <param Name="categoryId">kategori id</param>
         /// <returns></returns>
         [HttpGet("Products/")]
-        public async Task<ActionResult<IEnumerable<Product>>> Get(string categoryId)
+        public async Task<IActionResult> Get(string categoryId)
         {
-            var result = await _productService.GetProductsAsync(categoryId);
+            var result = await _productService.GetProductsDtoByCategoryAsync(categoryId);
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Category>> Post([FromBody] CategoryDTO category)
+        public async Task<ActionResult<Category>> Post([FromBody] CategoryDto category)
         {
-            var result = await _categoryService.CreateOneAsync(new Category { Name = category.Name, ParentId = category.ParentId , Description = category.Description });
+            var result = await _categoryService.CreateOneAsync(new Category { Name = category.Name, ParentId = category.ParentId, Description = category.Description });
 
             return Ok(result);
         }

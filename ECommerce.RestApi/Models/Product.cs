@@ -31,9 +31,9 @@ namespace ECommerce.RestApi.Models
         [BsonElement("price"), BsonRepresentation(BsonType.Decimal128)]
         public decimal Price { get; set; }
 
-        public static ProductDTO ConvertToproductDTO(Product product)
+        public static ProductDto ConvertToproductDTO(Product product)
         {
-            var productDTO = new ProductDTO
+            var productDTO = new ProductDto
             {
                 Id = product.Id,
                 CategoryId = product.CategoryId,
@@ -48,9 +48,9 @@ namespace ECommerce.RestApi.Models
             return productDTO;
         }
 
-        public static IEnumerable<ProductDTO> ConvertToProductDTO(IEnumerable<Product> products)
+        public static IEnumerable<ProductDto> ConvertToProductDTO(IEnumerable<Product> products)
         {
-            IEnumerable<ProductDTO> productsDto = products.Select(p => Product.ConvertToproductDTO(p));
+            IEnumerable<ProductDto> productsDto = products.Select(p => Product.ConvertToproductDTO(p));
             return productsDto;
         }
     }

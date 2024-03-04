@@ -4,10 +4,10 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace ECommerce.RestApi.Models
 {
     [Serializable]
-    public class Cart
+    public class ShoppingCart
     {
         [BsonElement("items")]
-        public List<CartItem> Items { get; set; } = new List<CartItem>();
+        public List<ShoppingCartItem> Items { get; set; } = new List<ShoppingCartItem>();
 
         
         [BsonElement(elementName: "totalItemCount")]

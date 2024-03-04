@@ -11,11 +11,6 @@ namespace ECommerce.RestApi.Services
         public Task<List<Category>> CreateManyAsync(List<Category> categories);
         public Task<Category> UpdateAsync(Category category);
 
-        /// <summary>
-        /// This returns all categories
-        /// </summary>
-        /// <param Name="categoryId"></param>
-        /// <returns></returns>
         public Task<bool> DeleteAsync(string categoryId);
 
     }

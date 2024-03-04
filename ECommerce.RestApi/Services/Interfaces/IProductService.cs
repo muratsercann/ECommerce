@@ -1,28 +1,36 @@
 ﻿using ECommerce.RestApi.Models;
+using ECommerce.RestApi.Models.DTOs;
 using System.Data;
 
 namespace ECommerce.RestApi.Services
 {
     public interface IProductService
     {
-        Task<Product> GetProductAsync(string productId);
-        Task<List<Product>> GetProductsAsync(List<string> productIds);
+        Task<ProductDto> GetProductDtoAsync(string productId);
 
-        Task<List<Product>> GetProductsAsync();
+        Task<IEnumerable<ProductDto>> GetProductsDtoAsync(IEnumerable<string> productIds);
 
-        Task<List<Product>> GetProductsAsync(string categoryId);
-                
+        Task<IEnumerable<ProductDto>> GetProductsDtoAsync();
+
+        Task<IEnumerable<ProductDto>> GetProductsDtoByCategoryAsync(string categoryId);
+
         Task<long> GetCountAsync();
 
-        Task<Product> CreateOneAsync(Product product);
+        Task<AddProductDto> CreateOneAsync(AddProductDto addProductDto);
 
-        Task<List<Product>> CreateManyAsync(List<Product> products);
-
-        Task<Product> UpdateAsync(Product product);
+        Task<IEnumerable<ProductDto>> CreateManyAsync(IEnumerable<ProductDto> products);
 
         Task<bool> DeleteAsync(string productId);
 
         Task<bool> IsValidProductIdAsync(string productId);
+
+        Task<IEnumerable<ProductDto>> GetShoppingCartProductsDto(ShoppingCart shoppingCart);
+        //
+
+        Task<IEnumerable<Product>> GetProductsAsync();
+        Task<IEnumerable<Product>> GetProductsAsync(IEnumerable<string> productIds);
+        Task<Product> GetProductAsync(string productId);
+        Task<IEnumerable<Product>> GetProductsByCategoryAsync(string categoryId);
 
     }
 }

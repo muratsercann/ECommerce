@@ -1,4 +1,6 @@
-﻿using ECommerce.RestApi.Models;
+﻿using AutoMapper;
+using ECommerce.RestApi.Models;
+using ECommerce.RestApi.Models.DTOs;
 using MongoDB.Driver;
 using System.Security.Cryptography.X509Certificates;
 
@@ -7,22 +9,26 @@ namespace ECommerce.RestApi.Services
     public class ProductService : IProductService
     {
         private readonly ECommerceContext _mongoContext;
+        private readonly IMapper _mapper;
 
-        public ProductService(ECommerceContext mongoContext)
+        public ProductService(ECommerceContext mongoContext, IMapper mapper)
         {
             _mongoContext = mongoContext;
+            _mapper = mapper;
         }
 
-        public async Task<List<Product>> CreateManyAsync(List<Product> products)
+        public async Task<IEnumerable<ProductDto>> CreateManyAsync(IEnumerable<ProductDto> productsDto)
         {
+            var products = _mapper.Map<IEnumerable<Product>>(productsDto);
             await _mongoContext.Products.InsertManyAsync(products);
-            return products;
+            return productsDto;
         }
 
-        public async Task<Product> CreateOneAsync(Product product)
+        public async Task<AddProductDto> CreateOneAsync(AddProductDto addProductDto)
         {
+            var product = _mapper.Map<Product>(addProductDto);
             await _mongoContext.Products.InsertOneAsync(product);
-            return product;
+            return addProductDto;
         }
 
         public async Task<bool> DeleteAsync(string productId)
@@ -37,28 +43,38 @@ namespace ECommerce.RestApi.Services
             return await _mongoContext.Products.CountDocumentsAsync(FilterDefinition<Product>.Empty);
         }
 
-        public async Task<Product> GetProductAsync(string productId)
+        public async Task<ProductDto> GetProductDtoAsync(string productId)
         {
-            var filter = Builders<Product>.Filter.Eq(p => p.Id ,productId) ;
-            return await _mongoContext.Products.Find(filter).FirstOrDefaultAsync();
+            var product = await GetProductAsync(productId);
+            var productDto = _mapper.Map<ProductDto>(product);
+            return productDto;
         }
 
-        public async Task<List<Product>> GetProductsAsync(List<string> productIds)
+        public async Task<IEnumerable<ProductDto>> GetProductsDtoAsync(IEnumerable<string> productIds)
         {
-
-            var filter = Builders<Product>.Filter.In(u => u.Id, productIds);
-            var cartProducts = await _mongoContext.Products.Find(filter).ToListAsync();
-            return cartProducts;
+            var products = await GetProductsAsync(productIds);
+            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
+            return productsDto;
         }
 
-        public async Task<List<Product>> GetProductsAsync()
+        public async Task<IEnumerable<ProductDto>> GetProductsDtoAsync()
         {
-            return await _mongoContext.Products.Find(Builders<Product>.Filter.Empty).ToListAsync();
+            var products = await _mongoContext.Products.Find(Builders<Product>.Filter.Empty).ToListAsync();
+            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
+            return productsDto;
         }
 
-        public async Task<List<Product>> GetProductsAsync(string categoryId)
+        public async Task<IEnumerable<ProductDto>> GetShoppingCartProductsDto(ShoppingCart shoppingCart)
         {
-            return await _mongoContext.Products.Find(Builders<Product>.Filter.Eq(p => p.CategoryId,categoryId)).ToListAsync();
+            if (shoppingCart?.Items is null || shoppingCart.Items.Count == 0)
+            {
+                return new List<ProductDto>();
+            }
+
+            var filter = Builders<Product>.Filter.In(p => p.Id, shoppingCart.Items.Select(f => f.ProductId));
+            var products = await _mongoContext.Products.Find(filter).ToListAsync();
+            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
+            return productsDto;
         }
 
         public async Task<bool> IsValidProductIdAsync(string productId)
@@ -69,15 +85,39 @@ namespace ECommerce.RestApi.Services
             return isExist;
         }
 
-        /// <summary>
-        ///!Not implemented yet.
-        /// </summary>
-        /// <param Name="product"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public Task<Product> UpdateAsync(Product product)
+        public async Task<IEnumerable<ProductDto>> GetProductsDtoByCategoryAsync(string categoryId)
         {
-            throw new NotImplementedException();
+            var products = await GetProductsByCategoryAsync(categoryId);
+            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
+            return productsDto;
         }
+
+        public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(string categoryId)
+        {
+            var filter = Builders<Product>.Filter.Eq(p => p.CategoryId, categoryId);
+            var products = await _mongoContext.Products.Find(filter).ToListAsync();
+            return products;
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsAsync()
+        {
+            return await _mongoContext.Products.Find(Builders<Product>.Filter.Empty).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsAsync(IEnumerable<string> productIds)
+        {
+
+            var filter = Builders<Product>.Filter.In(u => u.Id, productIds);
+            var products = await _mongoContext.Products.Find(filter).ToListAsync();
+            return products;
+        }
+
+        public async Task<Product> GetProductAsync(string productId)
+        {
+            var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+            return await _mongoContext.Products.Find(filter).FirstOrDefaultAsync();
+        }
+
+        
     }
 }

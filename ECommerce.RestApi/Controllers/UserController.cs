@@ -19,7 +19,7 @@ namespace ECommerce.RestApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<User>> Get(string id)
+        public async Task<IActionResult> Get(string id)
         {
             var user = await _userService.GetUserAsync(id);
             if (user is null)
@@ -30,8 +30,34 @@ namespace ECommerce.RestApi.Controllers
             return Ok(user);
         }
 
+        [HttpGet("Summary")]
+        public async Task<IActionResult> GetUserSummary(string id)
+        {
+            var user = await _userService.GetUserSummaryDtoAsync(id);
+            
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
+
+        [HttpGet("Detail")]
+        public async Task<IActionResult> GetDetails(string id)
+        {
+            var user = await _userService.GetUserDetailDtoAsync(id);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] UserDTO userDTO)
+        public async Task<IActionResult> Post([FromBody] CreateUserDto userDTO)
         {
             var isExist = await _userService.IsExistingUser(userDTO.Username);
             if (isExist)
@@ -47,7 +73,7 @@ namespace ECommerce.RestApi.Controllers
                 Password = userDTO.Password
             };
 
-            await _userService.CreateOneAsync(user);
+            await _userService.CreateAsync(user);
 
             return Ok(user);
         }

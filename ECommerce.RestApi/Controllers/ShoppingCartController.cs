@@ -9,15 +9,17 @@ namespace ECommerce.RestApi.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class CartController : Controller
+    public class ShoppingCartController : Controller
     {
-        private readonly ILogger<CartController> _logger;
+        private readonly ILogger<ShoppingCartController> _logger;
         private readonly IUserService _userService;
+        private readonly IShoppingCartService _shoppingCartService;
 
-        public CartController(ILogger<CartController> logger, IUserService userService)
+        public ShoppingCartController(ILogger<ShoppingCartController> logger, IUserService userService, IShoppingCartService shoppingCartService)
         {
             _logger = logger;
             _userService = userService;
+            _shoppingCartService = shoppingCartService;
         }
 
         [HttpGet]
@@ -35,16 +37,13 @@ namespace ECommerce.RestApi.Controllers
                 return Ok("This user has not got an item in his shopping cart yet.");
             }
 
-
-
-            IEnumerable<Product> productsInTheCart = await _userService.GetProductsInTheCartAsync(userId);
-            IEnumerable<ProductDTO> productsDtoInTheCart = Product.ConvertToProductDTO(productsInTheCart);
+            IEnumerable<ProductDto> productsDtoInTheCart = await _shoppingCartService.GetProductsInTheCartAsync(userId);
 
             //msercan? :
             //UserService üzerinden direk ProductDto listesini döndürecek metod mu yazmalı.
             //Bu işlemleri nerede yapmalı. Burda olması ne kadar sağlıklı.
 
-            List<CartItemDTO> cartItemDtoList = new List<CartItemDTO>();
+            List<ShoppingCartItemDto> cartItemDtoList = new List<ShoppingCartItemDto>();
             decimal totalPrice = 0;
             int totalItemCount = 0;
             foreach (var item in productsDtoInTheCart)
@@ -52,10 +51,10 @@ namespace ECommerce.RestApi.Controllers
                 var quantity = user.Cart!.Items.Where(i => i.ProductId == item.Id).FirstOrDefault()?.Quantity ?? 0;
                 totalItemCount += quantity;
                 totalPrice += (quantity * item.Price);
-                cartItemDtoList.Add(new CartItemDTO(item, quantity));
+                cartItemDtoList.Add(new ShoppingCartItemDto(item, quantity));
             }
 
-            CartDTO cartDto = new CartDTO(cartItemDtoList, totalPrice, totalItemCount);
+            ShoppingCartDto cartDto = new ShoppingCartDto(cartItemDtoList, totalPrice, totalItemCount);
 
             return Ok(cartDto);
         }
@@ -77,8 +76,8 @@ namespace ECommerce.RestApi.Controllers
             }
 
             //msercan? : Burada bu şekilde null kontrol yapmak mı. Yoksa User nesnesinde bunlara new ile ilk değer atamak mı.            
-            //user.Cart ??= new Cart();
-            //user.Cart.Items ??= new List<CartItem>(); 
+            //user.ShoppingCart ??= new ShoppingCart();
+            //user.ShoppingCart.Items ??= new List<ShoppingCartItem>(); 
 
             var cartItem = user.Cart.Items.Where(item => item.ProductId == addToCartObject.productId).FirstOrDefault();
 
@@ -89,7 +88,7 @@ namespace ECommerce.RestApi.Controllers
 
             else
             {
-                user.Cart.Items.Add(new CartItem
+                user.Cart.Items.Add(new ShoppingCartItem
                 {
                     ProductId = addToCartObject.productId,
                     Quantity = addToCartObject.quantity,
@@ -98,7 +97,7 @@ namespace ECommerce.RestApi.Controllers
 
             user.Cart.TotalItemCount = user.Cart.Items.Sum(item => item.Quantity);
 
-            await _userService.UpdateCartAsync(addToCartObject.userId, user.Cart);
+            await _shoppingCartService.UpdateCartAsync(addToCartObject.userId, user.Cart);
 
             var updatedUser = await _userService.GetUserAsync(addToCartObject.userId);
 
@@ -139,7 +138,7 @@ namespace ECommerce.RestApi.Controllers
 
             user.Cart.TotalItemCount = user.Cart.Items.Sum(item => item.Quantity);
 
-            await _userService.UpdateCartAsync(cartDto.userId, user.Cart);
+            await _shoppingCartService.UpdateCartAsync(cartDto.userId, user.Cart);
 
             var updatedUser = await _userService.GetUserAsync(cartDto.userId);
 

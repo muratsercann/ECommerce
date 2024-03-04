@@ -11,7 +11,7 @@ namespace ECommerce.RestApi.Models
         public DateTime Date { get; set; }
 
         [BsonElement("items")]
-        public List<CartItem> Items { get; set; }
+        public List<ShoppingCartItem> Items { get; set; }
 
         //public Address DeliveryAddress { get; set; }
     }

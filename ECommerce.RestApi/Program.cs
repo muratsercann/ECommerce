@@ -1,3 +1,4 @@
+using AutoMapper;
 using ECommerce.RestApi;
 using ECommerce.RestApi.Services;
 using Microsoft.Extensions.Configuration;
@@ -5,17 +6,16 @@ using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
-
 // Add services to the container.
 
-//builder.Services.AddScoped<IUserService, UserService>();    
 builder.Services.Configure<ECommerceDbSettings>(builder.Configuration.GetSection(nameof(ECommerceDbSettings)));
 builder.Services.AddSingleton<ECommerceContext>();
-builder.Services.AddScoped<IUserService,UserService>();
-builder.Services.AddScoped<ICategoryService,CategoryService>();
-builder.Services.AddScoped<IProductService,ProductService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IFavoritesService,FavoritesService>();
+builder.Services.AddScoped<IShoppingCartService,ShoppingCartService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 
 builder.Services.AddControllers();

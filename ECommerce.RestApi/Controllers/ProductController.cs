@@ -20,36 +20,24 @@ namespace ECommerce.RestApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> Get()
+        public async Task<IActionResult> Get()
         {
-            var result = await _productService.GetProductsAsync();
+            var result = await _productService.GetProductsDtoAsync();
             return Ok(result);
         }
 
         [HttpGet("{productId}")]
-        public async Task<ActionResult<Product>> Get(string productId)
+        public async Task<IActionResult> Get(string productId)
         {
-            var result = await _productService.GetProductAsync(productId);
+            var result = await _productService.GetProductDtoAsync(productId);
             return Ok(result);
-
         }
 
 
         [HttpPost]
-        public async Task<ActionResult<Product>> Post([FromBody] ProductDTO product)
+        public async Task<IActionResult> Post([FromBody] AddProductDto addProductDto)
         {
-            var result = await _productService.CreateOneAsync(
-                new Product
-                {
-                    CategoryId = product.CategoryId,
-                    Description = product.Description,
-                    ImageUrl = product.ImageUrl,
-                    Name = product.Name,
-                    Price = product.Price,
-                    Rating = product.Rating,
-                    Stock = product.Stock
-                });
-
+            var result = await _productService.CreateOneAsync(addProductDto);
             return Ok(result);
         }
 
@@ -60,7 +48,7 @@ namespace ECommerce.RestApi.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult<bool>> Delete(string productId)
+        public async Task<IActionResult> Delete(string productId)
         {
             var result = await _productService.DeleteAsync(productId);
             return Ok(result);

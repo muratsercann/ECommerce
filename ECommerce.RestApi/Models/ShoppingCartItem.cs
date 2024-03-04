@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace ECommerce.RestApi.Models
 {
     [Serializable]
-    public class CartItem
+    public class ShoppingCartItem
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string ProductId { get; set; }

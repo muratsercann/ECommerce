@@ -26,7 +26,7 @@ namespace ECommerce.RestApi.Models
         public List<string> Favorites { get; set; } = new List<string>();
 
         [BsonElement(elementName: "cart")]
-        public Cart Cart { get; set; } = new Cart();    
+        public ShoppingCart Cart { get; set; } = new ShoppingCart();    
 
         [BsonElement("orders")]
         public List<Order> Orders { get; set; } = new List<Order>();    

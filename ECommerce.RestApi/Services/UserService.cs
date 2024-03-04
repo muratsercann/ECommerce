@@ -1,4 +1,5 @@
-﻿using ECommerce.RestApi.Models;
+﻿using AutoMapper;
+using ECommerce.RestApi.Models;
 using ECommerce.RestApi.Models.DTOs;
 using Microsoft.AspNetCore.Http.HttpResults;
 using MongoDB.Bson;
@@ -12,23 +13,24 @@ namespace ECommerce.RestApi.Services
     {
         private readonly ECommerceContext _mongoContext;
         private readonly IProductService _productService;
+        private readonly IMapper _mapper;
 
-        public UserService(ECommerceContext mongoContext, IProductService productService)
+        public UserService(ECommerceContext mongoContext, IProductService productService, IMapper mapper)
         {
             _mongoContext = mongoContext;
             _productService = productService;
+            _mapper = mapper;
+        }
+        public async Task<User> CreateAsync(User user)
+        {
+            await _mongoContext.Users.InsertOneAsync(user);
+            return user;
         }
 
         public async Task<List<User>> CreateManyAsync(List<User> users)
         {
             await _mongoContext.Users.InsertManyAsync(users);
             return users;
-        }
-
-        public async Task<User> CreateOneAsync(User user)
-        {
-            await _mongoContext.Users.InsertOneAsync(user);
-            return user;
         }
 
         public Task<bool> DeleteAsync(User user)
@@ -48,31 +50,6 @@ namespace ECommerce.RestApi.Services
             return user;
         }
 
-        public async Task<Cart> GetUserCart(string userId)
-        {
-            var user = await GetUserAsync(userId);
-
-            if (user.Cart is null || user.Cart.Items == null || user.Cart.Items.Count == 0)
-            {
-                return new Cart();//???
-            }
-
-            var productIds = user.Cart.Items.Select(i => i.ProductId).ToList();
-            var cartProducts = await _productService.GetProductsAsync(productIds);
-            var totalPrice = cartProducts.Sum(p => p.Price * GetCartItemCount(user.Cart,p.Id));
-            user.Cart.TotalPrice = totalPrice;
-
-            return user.Cart;
-
-            int GetCartItemCount(Cart cart,string productId)
-            {
-                var item = cart.Items.Where(i => i.ProductId == productId).FirstOrDefault();
-                return item?.Quantity ?? 0;
-            }
-
-            
-        }
-
         public async Task<long> GetUsersCountAsync()
         {
             return await _mongoContext.Users.CountDocumentsAsync(FilterDefinition<User>.Empty);
@@ -86,58 +63,36 @@ namespace ECommerce.RestApi.Services
             return result is null ? false : true;
         }
 
-        public Task<User> UpdateAsync(User user)
+        public async Task<UserSummaryDto> GetUserSummaryDtoAsync(string userId)
         {
-            throw new NotImplementedException();
+
+            //msercan?: Burda user bilgisini çekip automapper ile mi maplemek lazım.
+            //Yoksa bu şekilde projection ile almak mı ?
+            var user = await _mongoContext.Users
+              .Find(u => u.Id == userId)
+              .Project(u => new UserSummaryDto
+              {
+                  Username = u.Username,
+                  FirstName = u.FirstName,
+                  LastName = u.LastName,
+                  Email = u.Email,
+                  FavoritesCount = u.Favorites.Count,
+                  ShoppingCarItemsCount = u.Cart.Items.Count,
+              }).FirstOrDefaultAsync();
+
+            return user;
         }
 
-        public async Task<Cart> UpdateCartAsync(string userId, Cart cart)
+        public async Task<UserDetailDto> GetUserDetailDtoAsync(string userId)
         {
+            //msercan todo : fix this method
             var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
-            var update = Builders<User>.Update.Set(u => u.Cart, cart);
-            var result = await _mongoContext.Users.UpdateOneAsync(filter, update);
+            var user = await _mongoContext.Users.Find(filter).FirstOrDefaultAsync();
 
-            return cart;
+
+
+            var userDetailDto = _mapper.Map<UserDetailDto>(user);
+            return userDetailDto;
         }
-
-        public async Task<List<string>> UpdateFavoritesAsync(string userId, List<string> favorites)
-        {
-            var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
-            var update = Builders<User>.Update.Set(u => u.Favorites, favorites);
-            var result = await _mongoContext.Users.UpdateOneAsync(filter, update);
-
-            return favorites;
-        }
-
-        public async Task<IEnumerable<Product>> GetFavoriteProductsAsync(string userId)
-        {
-            var user = await this.GetUserAsync(userId);
-
-            if (user is null || user.Favorites is null)
-            {
-                return new List<Product>();
-            }
-
-            var filter = Builders<Product>.Filter.In(p => p.Id, user.Favorites.Select(f => f.ToString()));
-            var products = await _mongoContext.Products.Find(filter).ToListAsync();
-
-            return products;
-        }
-
-        public async Task<IEnumerable<Product>> GetProductsInTheCartAsync(string userId)
-        {
-            var user = await this.GetUserAsync(userId);
-
-            if (user?.Cart?.Items is null || user.Cart.Items.Count == 0)
-            {
-                return new List<Product>();
-            }
-
-            var filter = Builders<Product>.Filter.In(p => p.Id, user.Cart.Items.Select(f => f.ProductId));
-            var products = await _mongoContext.Products.Find(filter).ToListAsync();
-
-            return products;
-        }
-
     }
 }
