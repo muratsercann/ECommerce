@@ -15,10 +15,9 @@ namespace ECommerce.RestApi
             CreateMap<Product, ProductDto>();
             CreateMap<Product, AddProductDto>();
             CreateMap<User, CreateUserDto>();
-            CreateMap<ShoppingCart, ShoppingCartDto>();
             CreateMap<User, UserSummaryDto>()
                 .ForMember(dest => dest.FavoritesCount, opt => opt.MapFrom(src => GetFavoritesCount(src.Favorites)))
-                .ForMember(dest => dest.ShoppingCarItemsCount, opt => opt.MapFrom(src => GetShoppingCartItemsCount(src.Cart)));
+                .ForMember(dest => dest.ShoppingCartItemsCount, opt => opt.MapFrom(src => GetShoppingCartItemsCount(src.Cart)));
 
             //CreateMap<User, UserDetailDto>()
             //.ForMember(dest => dest.Favorites, opt => opt.MapFrom(src => GetFavoriteProducts(src.Favorites)))

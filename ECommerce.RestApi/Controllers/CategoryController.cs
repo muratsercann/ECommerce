@@ -29,12 +29,7 @@ namespace ECommerce.RestApi.Controllers
         }
 
 
-        /// <summary>
-        /// Kategoriye ait ürün listesini döndürür.
-        /// </summary>
-        /// <param Name="categoryId">kategori id</param>
-        /// <returns></returns>
-        [HttpGet("Products/")]
+        [HttpGet("{categoryId}/products/")]
         public async Task<IActionResult> Get(string categoryId)
         {
             var result = await _productService.GetProductsDtoByCategoryAsync(categoryId);

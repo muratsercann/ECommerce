@@ -26,23 +26,23 @@ namespace ECommerce.RestApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{productId}")]
-        public async Task<IActionResult> Get(string productId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
         {
-            var result = await _productService.GetProductDtoAsync(productId);
+            var result = await _productService.GetProductDtoAsync(id);
             return Ok(result);
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] AddProductDto addProductDto)
+        public async Task<IActionResult> Post([FromBody] AddProductDto productDto)
         {
-            var result = await _productService.CreateOneAsync(addProductDto);
+            var result = await _productService.CreateOneAsync(productDto);
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put()
+        public async Task<IActionResult> Put([FromBody] AddProductDto productDto)
         {
             throw new NotImplementedException();
         }

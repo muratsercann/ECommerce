@@ -13,8 +13,9 @@ namespace ECommerce.RestApi.Services
 
         Task<ShoppingCart> GetUserCart(string userId);
 
-        Task<bool> AddToCart(string userId);
+        Task<bool> AddToCartAsync(AddToCartDto cartDto);
 
-        Task<bool> RemoveFromCart(string userId);
+        Task<bool> RemoveFromCartAsync(AddToCartDto cartDto);
+        Task<bool> RemoveAllFromCartAsync(string userId);
     }
 }

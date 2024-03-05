@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace ECommerce.RestApi.Models.DTOs
 {
-    public record AddToCartDTO(string userId, string productId, int quantity);
+    public record AddToCartDto(string userId, string productId, int quantity);
 
     public record CategoryDto(string Name, string ParentId = "", string Description = "");
 
@@ -46,7 +46,7 @@ namespace ECommerce.RestApi.Models.DTOs
         public string LastName { get; init; }
         public string Email { get; init; }
         public int FavoritesCount { get; init; }
-        public int ShoppingCarItemsCount { get; init; }
+        public int ShoppingCartItemsCount { get; init; }
 
         
     }

@@ -22,7 +22,7 @@ namespace ECommerce.RestApi.Services
 
         Task<bool> DeleteAsync(string productId);
 
-        Task<bool> IsValidProductIdAsync(string productId);
+        Task<bool> IsExistingProductAsync(string productId);
 
         Task<IEnumerable<ProductDto>> GetShoppingCartProductsDto(ShoppingCart shoppingCart);
         //

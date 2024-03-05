@@ -9,32 +9,29 @@ namespace ECommerce.RestApi.Services
     {
         private readonly ECommerceContext _mongoContext;
         private readonly IMapper _mapper;
-        private readonly IUserService _userService;
-        private readonly IProductService _productService;
 
-        public FavoritesService(ECommerceContext mongoContext,IMapper mapper, IUserService userService, IProductService productService)
+        public FavoritesService(ECommerceContext mongoContext, IMapper mapper)
         {
             _mongoContext = mongoContext;
             _mapper = mapper;
-            _userService = userService;
-            _productService = productService;
         }
-        
+
+        public async Task<IEnumerable<ProductDto>> GetFavoriteProductsDtoAsync(string userId)
+        {
+            var favorites = await GetFavoriteProductsAsync(userId);
+            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(favorites);
+            return productsDto;
+        }
+
         public async Task<IEnumerable<Product>> GetFavoriteProductsAsync(string userId)
         {
-            var user = await _userService.GetUserAsync(userId);
-
-            if (user is null || user.Favorites is null)
-            {
-                return new List<Product>();
-            }
-
-            var filter = Builders<Product>.Filter.In(p => p.Id, user.Favorites.Select(f => f.ToString()));
+            var favorites = await GetUserFavorites(userId);
+            var filter = Builders<Product>.Filter.In(p => p.Id, favorites);
             var products = await _mongoContext.Products.Find(filter).ToListAsync();
-
             return products;
         }
 
+        
         public async Task<List<string>> UpdateFavoritesAsync(string userId, List<string> favorites)
         {
             var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
@@ -44,24 +41,17 @@ namespace ECommerce.RestApi.Services
             return favorites;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetFavoriteProductsDtoAsync(string userId)
-        {
-            var user = await _userService.GetUserAsync(userId);
-            var products = await  _productService.GetProductsDtoAsync(user.Favorites);
-            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
-            return productsDto;            
-        }
 
         public async Task<bool> AddToFavorites(string userId, string productId)
         {
-            var user = await _userService.GetUserAsync(userId);
+            var user = await GetUserAsync(userId);
 
             if (user is null)
             {
                 return false;
             }
 
-            var isExistingProduct = await _productService.IsValidProductIdAsync(productId);
+            var isExistingProduct = await IsExistingProductAsync(productId);
 
             if (!isExistingProduct)
             {
@@ -85,14 +75,9 @@ namespace ECommerce.RestApi.Services
 
         }
 
-        private bool IsExistInFavorites(User user, string productId)
-        {
-            return user.Favorites.Any(item => item.ToString() == productId);
-        }
-
         public async Task<bool> RemoveFromFavorites(string userId, string productId)
         {
-            var user = await _userService.GetUserAsync(userId);
+            var user = await GetUserAsync(userId);
 
             if (user is null)
             {
@@ -120,7 +105,7 @@ namespace ECommerce.RestApi.Services
 
         public async Task<bool> RemoveAllFavorites(string userId)
         {
-            var user = await _userService.GetUserAsync(userId);
+            var user = await GetUserAsync(userId);
 
             if (user is null)
             {
@@ -133,10 +118,50 @@ namespace ECommerce.RestApi.Services
             }
 
             user.Favorites = new List<string>();
-            
+
             await UpdateFavoritesAsync(userId, user.Favorites);
 
             return true;
+        }
+
+        private async Task<User> GetUserAsync(string id)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
+            var user = await _mongoContext.Users.Find(filter).FirstOrDefaultAsync();
+            return user;
+        }
+
+        private async Task<IEnumerable<string>> GetUserFavorites(string userId)
+        {
+            FilterDefinition<User> filter = Builders<User>.Filter.Eq(user => user.Id, userId);
+
+            List<string> favoriteIds = await _mongoContext.Users
+              .Find(u => u.Id == userId)
+              .Project(u =>
+                  u.Favorites
+              ).FirstOrDefaultAsync();
+
+            return favoriteIds;
+        }
+
+        private async Task<IEnumerable<Product>> GetProductsAsync(IEnumerable<string> productIds)
+        {
+            var filter = Builders<Product>.Filter.In(u => u.Id, productIds);
+            var products = await _mongoContext.Products.Find(filter).ToListAsync();
+            return products;
+        }
+
+        private async Task<bool> IsExistingProductAsync(string productId)
+        {
+            var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+            var isExist = await _mongoContext.Products.Find(filter).AnyAsync();
+
+            return isExist;
+        }
+
+        private bool IsExistInFavorites(User user, string productId)
+        {
+            return user.Favorites.Any(item => item.ToString() == productId);
         }
     }
 }

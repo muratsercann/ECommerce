@@ -77,7 +77,7 @@ namespace ECommerce.RestApi.Services
             return productsDto;
         }
 
-        public async Task<bool> IsValidProductIdAsync(string productId)
+        public async Task<bool> IsExistingProductAsync(string productId)
         {
             var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
             var isExist = await _mongoContext.Products.Find(filter).AnyAsync();

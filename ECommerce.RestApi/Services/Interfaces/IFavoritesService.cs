@@ -1,4 +1,4 @@
-﻿using ECommerce.RestApi.Models;
+﻿ using ECommerce.RestApi.Models;
 using ECommerce.RestApi.Models.DTOs;
 
 namespace ECommerce.RestApi.Services
@@ -6,6 +6,7 @@ namespace ECommerce.RestApi.Services
     public interface IFavoritesService
     {
         Task<IEnumerable<ProductDto>> GetFavoriteProductsDtoAsync(string userId);
+       
         Task<IEnumerable<Product>> GetFavoriteProductsAsync(string userId);
 
         Task<bool> AddToFavorites(string userId, string productId);
