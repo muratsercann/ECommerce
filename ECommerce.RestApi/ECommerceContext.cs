@@ -7,7 +7,7 @@ namespace ECommerce.RestApi
   
     public class ECommerceContext
     {  
-        private readonly IMongoDatabase _database;
+        public readonly IMongoDatabase _database;
 
         public ECommerceContext(IOptions<ECommerceDbSettings> settings)
         {

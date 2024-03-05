@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.IdGenerators;
+using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 
 namespace ECommerce.RestApi.Models.DTOs
@@ -48,7 +49,22 @@ namespace ECommerce.RestApi.Models.DTOs
         public int FavoritesCount { get; init; }
         public int ShoppingCartItemsCount { get; init; }
 
-        
+        public static Expression<Func<User, UserSummaryDto>> Selector
+        {
+            get
+            {
+                return user => new UserSummaryDto()
+                {
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    FavoritesCount = user.Favorites.Count,
+                    ShoppingCartItemsCount = user.Cart != null ? user.Cart.Items.Sum(i => i.Quantity) : 0,
+
+                };
+            }
+        }
     }
 
     public record UserDetailDto()

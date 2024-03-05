@@ -52,7 +52,7 @@ namespace ECommerce.RestApi
             //        Email = $"user_{i}@mail.com",
             //    });
             //}
-            //await userService.CreateManyAsync(users);
+            //await userService.AddAsync(users);
         }
 
         private static async Task SeedCategoryCollection(ICategoryService categoryService)
@@ -68,7 +68,7 @@ namespace ECommerce.RestApi
             //    });
             //}
 
-            //await categoryService.CreateManyAsync(categories);
+            //await categoryService.AddAsync(categories);
         }
 
         private static async Task SeedProductCollection(ICategoryService categoryService,IProductService productService)
@@ -92,7 +92,7 @@ namespace ECommerce.RestApi
             //    }
             //}
 
-            //await productService.CreateManyAsync(products);
+            //await productService.AddAsync(products);
 
         }
 

@@ -44,18 +44,6 @@ namespace ECommerce.RestApi.Controllers
         }
 
 
-        [HttpGet("detail")]
-        public async Task<IActionResult> GetDetails(string id)
-        {
-            var user = await _userService.GetUserDetailDtoAsync(id);
-            if (user is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(user);
-        }
-
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateUserDto userDto)
         {
@@ -65,18 +53,12 @@ namespace ECommerce.RestApi.Controllers
                 return BadRequest("This username is already exist.");
             }
 
-            User user = new User
-            {
-                Username = userDto.Username,
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                Password = userDto.Password
-            };
+            bool result = await _userService.AddAsync(userDto);
 
-            await _userService.CreateAsync(user);
-
-            return Ok(user);
+            return Ok(result);
         }
+
+        //msercan : update...
         
     }
 }

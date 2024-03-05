@@ -9,21 +9,16 @@ namespace ECommerce.RestApi.Services
     {
         Task<User> GetUserAsync(string userId);
 
+        Task<IEnumerable<User>> GetAllUserAsync();
+
         Task<UserSummaryDto> GetUserSummaryDtoAsync(string userId);
 
-        Task<UserDetailDto> GetUserDetailDtoAsync(string userId);
-
-        Task<List<User>> GetAllUserAsync();
+        Task<bool> AddAsync(CreateUserDto userDto);
 
         Task<bool> IsExistingUser(string username);//msercan : username ??
 
         Task<long> GetUsersCountAsync();
 
-        Task<User> CreateAsync(User user);
-
-        Task<List<User>> CreateManyAsync(List<User> users);
-
-        Task<bool> DeleteAsync(User user);
                 
     }
 }
