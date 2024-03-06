@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Models.DTOs;
+using ECommerce.RestApi.Dto;
 using MongoDB.Driver;
 
 namespace ECommerce.RestApi.Services

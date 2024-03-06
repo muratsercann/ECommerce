@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Models.DTOs;
+using ECommerce.RestApi.Dto;
 using ECommerce.RestApi.Services;
 using MongoDB.Driver;
 
@@ -12,17 +12,25 @@ namespace ECommerce.RestApi
         private readonly IUserService _userService;
         public MappingProfile()
         {
+            CreateMap<Category, CategoryDto>();
+
             CreateMap<Product, ProductDto>();
             CreateMap<Product, AddProductDto>();
+
             CreateMap<User, CreateUserDto>();
             CreateMap<User, UserSummaryDto>()
-                .ForMember(dest => dest.FavoritesCount, opt => opt.MapFrom(src => GetFavoritesCount(src.Favorites)))
-                .ForMember(dest => dest.ShoppingCartItemsCount, opt => opt.MapFrom(src => GetShoppingCartItemsCount(src.Cart)));
+                .ForMember(dest => dest.FavoritesCount, opt => 
+                    opt.MapFrom(src => GetFavoritesCount(src.Favorites)))
+                .ForMember(dest => dest.ShoppingCartItemsCount, opt => 
+                    opt.MapFrom(src => src.Cart.TotalItemCount));
 
-            //CreateMap<User, UserDetailDto>()
-            //.ForMember(dest => dest.Favorites, opt => opt.MapFrom(src => GetFavoriteProducts(src.Favorites)))
-            //.ForMember(dest => dest.ShoppingCart, opt => opt.MapFrom(src => GetShoppingCartDto(src.Cart)));
 
+            //Projections
+            CreateProjection<User, UserSummaryDto>()
+                .ForMember(dest => dest.ShoppingCartItemsCount, opt =>
+                    opt.MapFrom(src => src.Cart.TotalItemCount));
+
+            CreateProjection<Category, CategoryDto>();
         }
 
         private object GetShoppingCartItemsCount(ShoppingCart cart)
@@ -33,7 +41,7 @@ namespace ECommerce.RestApi
 
         private int GetFavoritesCount(List<string> favorites)
         {
-            return favorites?.Count ?? 0;
+            return 125;
         }
 
         public static IEnumerable<ProductDto> GetFavoriteProducts(List<string> favoriteIds)

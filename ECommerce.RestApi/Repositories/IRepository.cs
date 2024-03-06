@@ -1,5 +1,4 @@
-﻿using ECommerce.RestApi.Models;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace ECommerce.RestApi.Repositories
 {
@@ -8,10 +7,12 @@ namespace ECommerce.RestApi.Repositories
         Task<TEntity> GetByIdAsync(string id);
 
         Task<TResult> GetByIdAsync<TResult>(string id, Expression<Func<TEntity, TResult>> selector);
-
+        
         Task<TResult> GetByIdAsync<TResult>(IEnumerable<string> ids, Expression<Func<TEntity, TResult>> selector);
-
+       
         Task<IEnumerable<TEntity>> GetAllAsync();
+
+        Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector);
 
         Task<bool> ExistsAsync(string id);
 
@@ -19,7 +20,7 @@ namespace ECommerce.RestApi.Repositories
 
         Task<bool> AddAsync(TEntity entity);
 
-        Task<bool> AddAsync(List<TEntity> entities);
+        Task<bool> AddAsync(IEnumerable<TEntity> entities);
 
         Task<bool> DeleteAsync(string id);
 

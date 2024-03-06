@@ -1,6 +1,5 @@
 ﻿using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Models.DTOs;
-using System.Data;
+using ECommerce.RestApi.Dto;
 
 namespace ECommerce.RestApi.Services
 {

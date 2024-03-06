@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
-using ECommerce.RestApi.Models.DTOs;
+using ECommerce.RestApi.Dto;
 
 namespace ECommerce.RestApi.Models
 {

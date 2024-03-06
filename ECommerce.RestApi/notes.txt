@@ -1,0 +1,37 @@
+﻿  public static class MongoDbExtensions
+    {
+        public static IMongoQueryable<TDestination> CustomProjectTo<TSource, TDestination>(
+            this IMongoQueryable<TSource> query, AutoMapper.IMapper mapper)
+        {
+            IQueryable<TDestination> queryable =
+                query.ProjectTo<TDestination>(mapper.ConfigurationProvider);
+
+            IMongoQueryable<TDestination> mongoQueryable =
+                queryable as IMongoQueryable<TDestination>;
+
+            return mongoQueryable;
+        }
+    }
+
+
+
+     public async Task<TResult> GetByIdAsync2<TResult>(string id)
+        {
+            //without extension
+
+
+            var a = _collection.AsQueryable().ProjectTo<TResult>(_mapper.ConfigurationProvider);
+            var b = a as IMongoQueryable<TResult>;
+            var c = await b.FirstOrDefaultAsync();
+
+            //with extension method named CustomProjectTo
+            var r = _collection.AsQueryable();
+            var r2 = r.CustomProjectTo<TEntity, TResult>(_mapper);
+            var r3 = await r.FirstOrDefaultAsync();
+
+            var result = await _collection.AsQueryable()
+                .CustomProjectTo<TEntity, TResult>(_mapper)
+                .FirstOrDefaultAsync();
+
+            return result;
+        }

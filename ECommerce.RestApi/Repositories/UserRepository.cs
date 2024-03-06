@@ -1,6 +1,5 @@
 ﻿using ECommerce.RestApi.Models;
 using MongoDB.Driver;
-using System.Linq.Expressions;
 
 namespace ECommerce.RestApi.Repositories
 {

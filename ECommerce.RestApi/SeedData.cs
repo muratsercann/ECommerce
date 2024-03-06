@@ -1,9 +1,4 @@
-﻿using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Services;
-using MongoDB.Driver;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using ECommerce.RestApi.Services;
 
 namespace ECommerce.RestApi
 {
@@ -26,7 +21,7 @@ namespace ECommerce.RestApi
             //var cartService = serviceProvider.GetService<ICartService>()!;
             //var cartItemService = serviceProvider.GetService<ICartItemService>()!;
             
-            var userCount = await userService.GetUsersCountAsync();
+            var userCount = await userService.GetCountAsync();
             var categoryCount = await categoryService.GetCategoryCountAsync();
             var productCount = await productService.GetCountAsync();
 
@@ -73,7 +68,7 @@ namespace ECommerce.RestApi
 
         private static async Task SeedProductCollection(ICategoryService categoryService,IProductService productService)
         {
-            //var categories = await categoryService.GetCategoriesAsync();
+            //var categories = await categoryService.GetCategoriesDtoAsync();
             //var products = new List<Product>();
             //foreach (var c in categories)
             //{

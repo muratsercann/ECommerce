@@ -1,23 +1,24 @@
 ﻿using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Models.DTOs;
-using MongoDB.Bson;
+using ECommerce.RestApi.Dto;
 
 namespace ECommerce.RestApi.Services
 {
 
     public interface IUserService
     {
-        Task<User> GetUserAsync(string userId);
+        Task<User> GetAsync(string userId);
 
-        Task<IEnumerable<User>> GetAllUserAsync();
+        Task<IEnumerable<User>> GetAllAsync();
 
         Task<UserSummaryDto> GetUserSummaryDtoAsync(string userId);
 
         Task<bool> AddAsync(CreateUserDto userDto);
 
-        Task<bool> IsExistingUser(string username);//msercan : username ??
+        Task<bool> DeleteAsync(string userId);
 
-        Task<long> GetUsersCountAsync();
+        Task<bool> ExistsUserName(string username);
+
+        Task<long> GetCountAsync();
 
                 
     }

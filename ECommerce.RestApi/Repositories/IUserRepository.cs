@@ -1,6 +1,4 @@
 ﻿using ECommerce.RestApi.Models;
-using MongoDB.Bson.Serialization.IdGenerators;
-using System.Linq.Expressions;
 
 namespace ECommerce.RestApi.Repositories
 {

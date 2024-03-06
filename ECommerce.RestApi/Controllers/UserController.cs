@@ -1,5 +1,4 @@
-﻿using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Models.DTOs;
+﻿using ECommerce.RestApi.Dto;
 using ECommerce.RestApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +20,7 @@ namespace ECommerce.RestApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(string id)
         {
-            var user = await _userService.GetUserAsync(id);
+            var user = await _userService.GetAsync(id);
             if (user is null)
             {
                 return NotFound();
@@ -47,7 +46,7 @@ namespace ECommerce.RestApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateUserDto userDto)
         {
-            var isExist = await _userService.IsExistingUser(userDto.Username);
+            var isExist = await _userService.ExistsUserName(userDto.Username);
             if (isExist)
             {
                 return BadRequest("This username is already exist.");

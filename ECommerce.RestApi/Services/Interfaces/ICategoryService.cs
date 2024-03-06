@@ -1,17 +1,24 @@
 ﻿using ECommerce.RestApi.Models;
+using ECommerce.RestApi.Dto;
 
 namespace ECommerce.RestApi.Services
 {
     public interface ICategoryService
     {
-        public Task<List<Category>> GetCategoriesAsync();
-        public Task<Category> GetCategoryAsync(string categoryId);
+        public Task<CategoryDto> GetCategoryDtoAsync(string categoryId);
+        
+        public Task<IEnumerable<CategoryDto>> GetCategoriesDtoAsync();
+
         public Task<long> GetCategoryCountAsync();
-        public Task<Category> CreateOneAsync(Category category);
-        public Task<List<Category>> CreateManyAsync(List<Category> categories);
-        public Task<Category> UpdateAsync(Category category);
+
+        public Task<bool> CreateOneAsync(CreateCategoryDto categoryDto);
+
+        public Task<bool> CreateManyAsync(IEnumerable<CreateCategoryDto> categories);
 
         public Task<bool> DeleteAsync(string categoryId);
+
+        public Task<bool> UpdateAsync(Category category);
+
 
     }
 }

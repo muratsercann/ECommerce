@@ -1,52 +1,60 @@
 ﻿using ECommerce.RestApi.Models;
-using MongoDB.Driver;
+using ECommerce.RestApi.Dto;
+using ECommerce.RestApi.Repositories;
+using AutoMapper;
 
 namespace ECommerce.RestApi.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly ECommerceContext _mongoContext;
+        private readonly IMapper _mapper;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryService(ECommerceContext mongoContext)
+        public CategoryService(IMapper mapper, ICategoryRepository categoryRepository)
         {
-            _mongoContext = mongoContext;
-        }
-        public async Task<List<Category>> CreateManyAsync(List<Category> categories)
-        {
-            await _mongoContext.Categories.InsertManyAsync(categories);
-            return categories;
+            _mapper = mapper;
+            _categoryRepository = categoryRepository;
         }
 
-        public async Task<Category> CreateOneAsync(Category category)
+        public async Task<CategoryDto> GetCategoryDtoAsync(string categoryId)
         {
-            await _mongoContext.Categories.InsertOneAsync(category);
+            CategoryDto category = await _categoryRepository.GetByIdAsync(categoryId, CategoryDto.Selector);
             return category;
         }
 
-        public async Task<bool> DeleteAsync(string categoryId)
+        public async Task<IEnumerable<CategoryDto>> GetCategoriesDtoAsync()
         {
-            var filter = Builders<Category>.Filter.Eq(c => c.Id, categoryId);
-            var result = await _mongoContext.Categories.DeleteOneAsync(filter);
-            return result.IsAcknowledged;
-        }
-
-        public async Task<List<Category>> GetCategoriesAsync()
-        {
-            return await _mongoContext.Categories.AsQueryable().ToListAsync();
-        }
-
-        public async Task<Category> GetCategoryAsync(string categoryId)
-        {
-            var filter = Builders<Category>.Filter.Eq(c => c.Id, categoryId);
-            return await _mongoContext.Categories.Find(filter).FirstOrDefaultAsync();
+            IEnumerable<CategoryDto> categoriesDto =
+                await _categoryRepository.GetAllAsync(CategoryDto.Selector);
+            return categoriesDto;
         }
 
         public async Task<long> GetCategoryCountAsync()
         {
-            return await _mongoContext.Categories.CountDocumentsAsync(FilterDefinition<Category>.Empty);
+            return await _categoryRepository.GetCountAsync();
         }
 
-        public async Task<Category> UpdateAsync(Category category)
+        public async Task<bool> CreateOneAsync(CreateCategoryDto categoryDto)
+        {
+            var category = _mapper.Map<Category>(categoryDto);
+            bool result = await _categoryRepository.AddAsync(category);
+            return result;
+        }
+
+        public async Task<bool> CreateManyAsync(IEnumerable<CreateCategoryDto> categoryDtos)
+        {
+            IEnumerable<Category> categories = _mapper.Map<IEnumerable<Category>>(categoryDtos);
+            bool result = await _categoryRepository.AddAsync(categories);
+            return result;
+        }
+
+        public async Task<bool> DeleteAsync(string categoryId)
+        {
+            bool result = await _categoryRepository.DeleteAsync(categoryId);
+            return result;
+        }
+
+        public async Task<bool> UpdateAsync(Category category)
         {
             throw new NotImplementedException();
         }

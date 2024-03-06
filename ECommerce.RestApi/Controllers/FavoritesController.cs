@@ -1,9 +1,6 @@
-﻿using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Models.DTOs;
+﻿using ECommerce.RestApi.Dto;
 using ECommerce.RestApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
-using System.Diagnostics.CodeAnalysis;
 
 
 namespace ECommerce.RestApi.Controllers
@@ -28,7 +25,7 @@ namespace ECommerce.RestApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(string userId)
         {
-            var user = await _userService.GetUserAsync(userId);
+            var user = await _userService.GetAsync(userId);
             if (user == null)
             {
                 return NotFound($"The user with userId {userId} does not exist");

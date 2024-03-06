@@ -1,8 +1,6 @@
-﻿using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Models.DTOs;
+﻿using ECommerce.RestApi.Dto;
 using ECommerce.RestApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace ECommerce.RestApi.Controllers
 {

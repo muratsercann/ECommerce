@@ -1,5 +1,5 @@
 ﻿using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Models.DTOs;
+using ECommerce.RestApi.Dto;
 using ECommerce.RestApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -25,7 +25,7 @@ namespace ECommerce.RestApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(string userId)
         {
-            var user = await _userService.GetUserAsync(userId);
+            var user = await _userService.GetAsync(userId);
 
             if (user is null)
             {

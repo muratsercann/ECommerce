@@ -1,4 +1,4 @@
-﻿using ECommerce.RestApi.Models.DTOs;
+﻿using ECommerce.RestApi.Dto;
 using ECommerce.RestApi.Models;
 using ECommerce.RestApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -21,26 +21,33 @@ namespace ECommerce.RestApi.Controllers
             _categoryService = categoryService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            var result = await _categoryService.GetCategoryDtoAsync(id);
+            return Ok(result);
+        }
+
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> Get()
         {
-            var result = await _categoryService.GetCategoriesAsync();
+            var result = await _categoryService.GetCategoriesDtoAsync();
             return Ok(result);
         }
 
 
         [HttpGet("{categoryId}/products/")]
-        public async Task<IActionResult> Get(string categoryId)
+        public async Task<IActionResult> GetProducts(string categoryId)
         {
             var result = await _productService.GetProductsDtoByCategoryAsync(categoryId);
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Category>> Post([FromBody] CategoryDto category)
+        public async Task<ActionResult<Category>> Post([FromBody] CreateCategoryDto category)
         {
-            var result = await _categoryService.CreateOneAsync(new Category { Name = category.Name, ParentId = category.ParentId, Description = category.Description });
-
+            var result = await _categoryService.CreateOneAsync(category);
             return Ok(result);
         }
 

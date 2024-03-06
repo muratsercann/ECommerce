@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using ECommerce.RestApi.Models;
-using ECommerce.RestApi.Models.DTOs;
+using ECommerce.RestApi.Dto;
 using MongoDB.Driver;
-using System.Security.Cryptography.X509Certificates;
 
 namespace ECommerce.RestApi.Services
 {

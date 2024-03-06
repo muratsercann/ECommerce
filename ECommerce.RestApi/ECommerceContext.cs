@@ -7,7 +7,7 @@ namespace ECommerce.RestApi
   
     public class ECommerceContext
     {  
-        public readonly IMongoDatabase _database;
+        private readonly IMongoDatabase _database;
 
         public ECommerceContext(IOptions<ECommerceDbSettings> settings)
         {
@@ -18,6 +18,11 @@ namespace ECommerce.RestApi
         private string GetCollectionName<T>()
         {
             return typeof(T).Name.ToLowerInvariant();
+        }
+
+        public IMongoCollection<T> GetCollection<T>() 
+        {
+            return _database.GetCollection<T>(GetCollectionName<T>());
         }
 
         public IMongoCollection<User> Users => _database.GetCollection<User>(GetCollectionName<User>());
