@@ -15,21 +15,12 @@ namespace ECommerce.RestApi.Services
 
         Task<long> GetCountAsync();
 
-        Task<AddProductDto> CreateOneAsync(AddProductDto addProductDto);
+        Task<bool> CreateOneAsync(CreateProductDto productDto);
 
-        Task<IEnumerable<ProductDto>> CreateManyAsync(IEnumerable<ProductDto> products);
+        Task<bool> CreateManyAsync(IEnumerable<ProductDto> products);
 
         Task<bool> DeleteAsync(string productId);
 
-        Task<bool> IsExistingProductAsync(string productId);
-
-        Task<IEnumerable<ProductDto>> GetShoppingCartProductsDto(ShoppingCart shoppingCart);
-        //
-
-        Task<IEnumerable<Product>> GetProductsAsync();
-        Task<IEnumerable<Product>> GetProductsAsync(IEnumerable<string> productIds);
-        Task<Product> GetProductAsync(string productId);
-        Task<IEnumerable<Product>> GetProductsByCategoryAsync(string categoryId);
-
+        Task<bool> ExistsProductAsync(string productId);
     }
 }

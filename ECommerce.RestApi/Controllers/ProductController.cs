@@ -33,14 +33,14 @@ namespace ECommerce.RestApi.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] AddProductDto productDto)
+        public async Task<IActionResult> Post([FromBody] CreateProductDto productDto)
         {
             var result = await _productService.CreateOneAsync(productDto);
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] AddProductDto productDto)
+        public async Task<IActionResult> Put([FromBody] CreateProductDto productDto)
         {
             throw new NotImplementedException();
         }

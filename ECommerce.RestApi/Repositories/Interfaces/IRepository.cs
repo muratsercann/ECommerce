@@ -8,7 +8,7 @@ namespace ECommerce.RestApi.Repositories
 
         Task<TResult> GetByIdAsync<TResult>(string id, Expression<Func<TEntity, TResult>> selector);
         
-        Task<TResult> GetByIdAsync<TResult>(IEnumerable<string> ids, Expression<Func<TEntity, TResult>> selector);
+        Task<IEnumerable<TResult>> GetByIdAsync<TResult>(IEnumerable<string> ids, Expression<Func<TEntity, TResult>> selector);
        
         Task<IEnumerable<TEntity>> GetAllAsync();
 

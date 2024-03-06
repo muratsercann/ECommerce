@@ -13,7 +13,7 @@ namespace ECommerce.RestApi.Repositories
         public Repository(ECommerceContext mongoContext)
         {
             _mongoContext = mongoContext;
-            _collection = _mongoContext.GetCollection<TEntity>();
+            _collection = _mongoContext.GetCollection<TEntity>(); ;
         }
 
         public async Task<bool> AddAsync(TEntity entity)
@@ -79,13 +79,13 @@ namespace ECommerce.RestApi.Repositories
             return result;
         }
 
-        public async Task<TResult> GetByIdAsync<TResult>(IEnumerable<string> ids, Expression<Func<TEntity, TResult>> selector)
+        public async Task<IEnumerable<TResult>> GetByIdAsync<TResult>(IEnumerable<string> ids, Expression<Func<TEntity, TResult>> selector)
         {
             var filter = Builders<TEntity>.Filter.In("_id", ids.Select(id => ObjectId.Parse(id)));
 
             var result = await _collection
               .Find(filter)
-              .Project(selector).FirstOrDefaultAsync();
+              .Project(selector).ToListAsync();
 
             return result;
         }

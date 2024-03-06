@@ -6,10 +6,12 @@ namespace ECommerce.RestApi.Repositories
     public class UserRepository : Repository<User>, IUserRepository
     {
         private readonly ECommerceContext _mongoContext;
+        private readonly IMongoCollection<User> _collection;
 
         public UserRepository(ECommerceContext mongoContext) : base(mongoContext)
         {
             _mongoContext = mongoContext;
+            _collection = _mongoContext.GetCollection<User>();
         }
 
         public async Task<IEnumerable<string>> GetFavoriteIdsAsync(string userId)
