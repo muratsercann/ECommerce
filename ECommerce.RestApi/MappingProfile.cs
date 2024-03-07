@@ -14,6 +14,7 @@ namespace ECommerce.RestApi
 
             CreateMap<Product, ProductDto>();
             CreateMap<Product, CreateProductDto>();
+            CreateMap<Product, ProductSummaryDto>();
 
             CreateMap<User, CreateUserDto>();
             CreateMap<User, UserSummaryDto>()

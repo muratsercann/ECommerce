@@ -11,7 +11,6 @@ namespace ECommerce.RestApi.Controllers
     {
         private readonly ILogger<CategoryController> _logger;
         private readonly IProductService _productService;
-        private readonly IProductService _product;
         private readonly ICategoryService _categoryService;
 
         public CategoryController(ILogger<CategoryController> logger, IProductService productService, ICategoryService categoryService)

@@ -34,6 +34,24 @@ namespace ECommerce.RestApi.Dto
         }
     }
 
+    public record ProductSummaryDto
+    {
+        public string Name { get; set; }
+
+        public static Expression<Func<Product, ProductSummaryDto>> Selector
+        {
+            get
+            {
+                return product =>
+                new ProductSummaryDto
+                {
+                     Name = product.Name
+                };
+            }
+        }
+
+    }
+
     public record CreateProductDto
     {
         public string Name { get; init; }
