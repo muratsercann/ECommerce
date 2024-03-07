@@ -8,13 +8,11 @@ namespace ECommerce.RestApi.Services
 {
     public class ProductService : IProductService
     {
-        private readonly ECommerceContext _mongoContext;
         private readonly IMapper _mapper;
         private readonly IProductRepository _productRepository;
 
-        public ProductService(ECommerceContext mongoContext, IMapper mapper, IProductRepository productRepository)
+        public ProductService(IMapper mapper, IProductRepository productRepository)
         {
-            _mongoContext = mongoContext;
             _mapper = mapper;
             _productRepository = productRepository;
         }

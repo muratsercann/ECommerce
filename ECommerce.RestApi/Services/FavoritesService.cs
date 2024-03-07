@@ -8,14 +8,10 @@ namespace ECommerce.RestApi.Services
 {
     public class FavoritesService : IFavoritesService
     {
-        private readonly ECommerceContext _mongoContext;//Should not be here. Remove it...
-        private readonly IMapper _mapper;
         private readonly IFavoriteRepository _favoriteRepository;
 
-        public FavoritesService(ECommerceContext mongoContext, IMapper mapper, IFavoriteRepository favoriteRepository)
+        public FavoritesService(IFavoriteRepository favoriteRepository)
         {
-            _mongoContext = mongoContext;
-            _mapper = mapper;
             _favoriteRepository = favoriteRepository;
         }
 
@@ -31,107 +27,78 @@ namespace ECommerce.RestApi.Services
             return result;
         }
 
-        public async Task<bool> AddToFavorites(string userId, string productId)
+        public async Task<bool> AddToFavoritesAsync(string userId, string productId)
         {
-            //Edit the GetUserAsync method to use the Project to get only the required fields
-            var user = await GetUserAsync(userId);
+            List<string> userFavorites = (await _favoriteRepository.GetFavoriteIdsAsync(userId)).ToList();
+            
             bool result = false;
-            if (user is null)
+            
+            if (userFavorites is null)
             {
-                return result;
+                return false;
             }
 
-            var isExistingProduct = await ExistingProductAsync(productId);
+            var isExistingProduct = await _favoriteRepository.ExistingProductAsync(productId);
 
             if (!isExistingProduct)
             {
-                return result;
+                return false;
             }
 
-            if (user.Favorites is null)
+            if (userFavorites is null)
             {
-                user.Favorites = new List<string> { productId };
-                result = await _favoriteRepository.UpdateFavoritesAsync(userId, user.Favorites);
+                userFavorites = new List<string> { productId };
+                result = await _favoriteRepository.UpdateFavoritesAsync(userId, userFavorites);
                 return result;
             }
 
-            else if (ExistsInFavorites(user, productId))
+            else if (ExistsInFavorites(userFavorites, productId))
             {
-                return result;
+                return false;
             }
 
-            user.Favorites.Add(productId);
-            result = await _favoriteRepository.UpdateFavoritesAsync(userId, user.Favorites);
+            userFavorites.Add(productId);
+            result = await _favoriteRepository.UpdateFavoritesAsync(userId, userFavorites);
             return result;
         }
 
-        public async Task<bool> RemoveFromFavorites(string userId, string productId)
+        public async Task<bool> RemoveFromFavoritesAsync(string userId, string productId)
         {
-            var user = await GetUserAsync(userId);
+            List<string> userFavorites = (await _favoriteRepository.GetFavoriteIdsAsync(userId)).ToList();
 
-            if (user is null)
+
+            if (userFavorites is null)
             {
                 return false;
             }
 
-            if (user.Favorites is null || user.Favorites.Count == 0)
+            if (userFavorites is null || userFavorites.Count == 0)
             {
                 return false;
             }
 
-            var item = user.Favorites.Where(item => item.ToString() == productId).FirstOrDefault();
+            var item = userFavorites.Where(item => item.ToString() == productId).FirstOrDefault();
 
             if (string.IsNullOrEmpty(item?.ToString()))
             {
                 return false;
             }
 
-            user.Favorites.Remove(item);
-
-            await _favoriteRepository.UpdateFavoritesAsync(userId, user.Favorites);
-
-            return true;
+            userFavorites.Remove(item);
+            bool result = await _favoriteRepository.UpdateFavoritesAsync(userId, userFavorites);
+            return result;
         }
 
-        public async Task<bool> RemoveAllFavorites(string userId)
+        public async Task<bool> RemoveAllFavoritesAsync(string userId)
         {
-            var user = await GetUserAsync(userId);
-
-            if (user is null)
-            {
-                return false;
-            }
-
-            if (user.Favorites is null || user.Favorites.Count == 0)
-            {
-                return false;
-            }
-
-            await _favoriteRepository.UpdateFavoritesAsync(userId, new List<string>());
-
-            return true;
+            bool result = await _favoriteRepository.UpdateFavoritesAsync(userId, new List<string>());
+            return result;
         }
 
-        //msercan Edit below
-
-        private async Task<User> GetUserAsync(string id)
+        private bool ExistsInFavorites(IEnumerable<string> favoriteIds, string productId)
         {
-            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
-            var user = await _mongoContext.Users.Find(filter).FirstOrDefaultAsync();
-            return user;
-        }
-
-        private async Task<bool> ExistingProductAsync(string productId)
-        {
-            var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
-            var isExist = await _mongoContext.Products.Find(filter).AnyAsync();
-
+            bool isExist = favoriteIds.Any(item => item.ToString() == productId);
             return isExist;
-        }
-
-        private bool ExistsInFavorites(User user, string productId)
-        {
-            return user.Favorites.Any(item => item.ToString() == productId);
         }
     }
 }

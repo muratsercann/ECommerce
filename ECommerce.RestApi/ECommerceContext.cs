@@ -17,7 +17,7 @@ namespace ECommerce.RestApi
 
         private string GetCollectionName<T>()
         {
-            return typeof(T).Name.ToLowerInvariant();
+            return typeof(T).Name.ToLowerInvariant();//msercan?
         }
 
         public IMongoCollection<T> GetCollection<T>() 
@@ -29,9 +29,6 @@ namespace ECommerce.RestApi
         public IMongoCollection<Product> Products => _database.GetCollection<Product>(GetCollectionName<Product>());
         public IMongoCollection<Category> Categories => _database.GetCollection<Category>(GetCollectionName<Category>());
         public IMongoCollection<Order> Orders => _database.GetCollection<Order>(GetCollectionName<Order>());
-        public IMongoCollection<ShoppingCart> Carts => _database.GetCollection<ShoppingCart>(GetCollectionName<ShoppingCart>());
-        public IMongoCollection<ShoppingCartItem> CartItems => _database.GetCollection<ShoppingCartItem>(GetCollectionName<ShoppingCartItem>());
-        
     }
 
     

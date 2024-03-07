@@ -31,7 +31,8 @@ internal class Program
             .Project(user => user.Favorites)
             .FirstOrDefault();
 
-
+        var cart = new ShoppingCart();
+        var result = cart.Items.Sum(item => item.Quantity);
 
 
         Console.ReadLine();
@@ -70,7 +71,8 @@ internal class Program
                    Description = $"desc_{x.ProductId}"
 
                },
-               x.Quantity
+               x.Quantity,
+               4
             ));
         }
 

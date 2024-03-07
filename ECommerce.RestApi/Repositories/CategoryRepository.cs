@@ -6,13 +6,11 @@ namespace ECommerce.RestApi.Repositories
 {
     public class CategoryRepository : Repository<Category>, ICategoryRepository 
     {
-        private readonly ECommerceContext _mongoContext;
-        private readonly IMongoCollection<Category> _collection;
+        private readonly IMongoCollection<Category> _categoryCollection;
 
         public CategoryRepository(ECommerceContext mongoContext) : base(mongoContext)
         {
-            _mongoContext = mongoContext;
-            _collection = _mongoContext.GetCollection<Category>();
+            _categoryCollection = mongoContext.Categories;
         }
     }
 

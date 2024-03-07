@@ -8,12 +8,10 @@ namespace ECommerce.RestApi.Controllers
     [Route("api/[controller]")]
     public class ProductController : Controller
     {
-        private readonly ILogger<ProductController> _logger;
         private readonly IProductService _productService;
 
-        public ProductController(ILogger<ProductController> logger, IProductService productService)
+        public ProductController(IProductService productService)
         {
-            _logger = logger;
             _productService = productService;
         }
 
@@ -37,12 +35,6 @@ namespace ECommerce.RestApi.Controllers
         {
             var result = await _productService.CreateOneAsync(productDto);
             return Ok(result);
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Put([FromBody] CreateProductDto productDto)
-        {
-            throw new NotImplementedException();
         }
 
         [HttpDelete]

@@ -16,7 +16,7 @@ namespace ECommerce.RestApi.Services
 
         Task<bool> DeleteAsync(string userId);
 
-        Task<bool> ExistsUserName(string username);
+        Task<bool> ExistsUserNameAsync(string username);
 
         Task<long> GetCountAsync();
 

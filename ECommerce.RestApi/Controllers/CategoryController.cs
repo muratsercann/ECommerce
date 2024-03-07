@@ -9,13 +9,11 @@ namespace ECommerce.RestApi.Controllers
     [Route("api/[controller]")]
     public class CategoryController : Controller
     {
-        private readonly ILogger<CategoryController> _logger;
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
 
-        public CategoryController(ILogger<CategoryController> logger, IProductService productService, ICategoryService categoryService)
+        public CategoryController(IProductService productService, ICategoryService categoryService)
         {
-            _logger = logger;
             _productService = productService;
             _categoryService = categoryService;
         }
@@ -26,7 +24,6 @@ namespace ECommerce.RestApi.Controllers
             var result = await _categoryService.GetCategoryDtoAsync(id);
             return Ok(result);
         }
-
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> Get()
@@ -48,12 +45,6 @@ namespace ECommerce.RestApi.Controllers
         {
             var result = await _categoryService.CreateOneAsync(category);
             return Ok(result);
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Put()
-        {
-            throw new NotImplementedException();
         }
 
         [HttpDelete]

@@ -7,11 +7,8 @@ namespace ECommerce.RestApi.Controllers
     [Route("api/[controller]")]
     public class OrderController : Controller
     {
-        private readonly ILogger<OrderController> _logger;
-
-        public OrderController(ILogger<OrderController> logger)
+        public OrderController()
         {
-            _logger = logger;
         }
     }
 }

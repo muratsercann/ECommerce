@@ -10,11 +10,7 @@ namespace ECommerce.RestApi.Models
         public List<ShoppingCartItem> Items { get; set; } = new List<ShoppingCartItem>();
 
         
-        [BsonElement(elementName: "totalItemCount")]
-        public int TotalItemCount { get; set; }
-
-        [BsonIgnore]//msercan todo : delete this. This information should be in the dto object.
-        public decimal TotalPrice { get; set; }
-
+        [BsonElement(elementName: "totalItemQuantity")]
+        public int TotalItemQuantity { get; set; }
     }
 }

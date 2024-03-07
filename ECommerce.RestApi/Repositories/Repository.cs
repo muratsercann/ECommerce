@@ -7,13 +7,11 @@ namespace ECommerce.RestApi.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private readonly ECommerceContext _mongoContext;
         private readonly IMongoCollection<TEntity> _collection;
 
         public Repository(ECommerceContext mongoContext)
         {
-            _mongoContext = mongoContext;
-            _collection = _mongoContext.GetCollection<TEntity>(); ;
+            _collection = mongoContext.GetCollection<TEntity>();
         }
 
         public async Task<bool> AddAsync(TEntity entity)

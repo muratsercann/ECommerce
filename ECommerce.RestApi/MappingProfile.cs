@@ -10,6 +10,7 @@ namespace ECommerce.RestApi
     {
         public MappingProfile()
         {
+            //Mappings
             CreateMap<Category, CategoryDto>();
 
             CreateMap<Product, ProductDto>();
@@ -21,7 +22,7 @@ namespace ECommerce.RestApi
                 .ForMember(dest => dest.FavoritesCount, opt => 
                     opt.MapFrom(src => GetFavoritesCount(src.Favorites)))
                 .ForMember(dest => dest.ShoppingCartItemsCount, opt => 
-                    opt.MapFrom(src => src.Cart.TotalItemCount));
+                    opt.MapFrom(src => src.Cart.TotalItemQuantity));
 
 
             //Projections
@@ -29,7 +30,7 @@ namespace ECommerce.RestApi
                 .ForMember(dest => dest.FavoritesCount, opt =>
                     opt.MapFrom(src => GetFavoritesCount(src.Favorites)))
                 .ForMember(dest => dest.ShoppingCartItemsCount, opt =>
-                    opt.MapFrom(src => src.Cart.TotalItemCount));
+                    opt.MapFrom(src => src.Cart.TotalItemQuantity));
 
             CreateProjection<Category, CategoryDto>();
         }

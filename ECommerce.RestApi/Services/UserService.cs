@@ -7,13 +7,11 @@ namespace ECommerce.RestApi.Services
 {
     public class UserService : IUserService
     {
-        private readonly ECommerceContext _mongoContext;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
 
-        public UserService(ECommerceContext mongoContext,IMapper mapper, IUserRepository userRepository)
+        public UserService(IMapper mapper, IUserRepository userRepository)
         {
-            _mongoContext = mongoContext;
             _mapper = mapper;
             _userRepository = userRepository;
         }
@@ -47,7 +45,7 @@ namespace ECommerce.RestApi.Services
             return await _userRepository.GetCountAsync();
         }
 
-        public async Task<bool> ExistsUserName(string id)
+        public async Task<bool> ExistsUserNameAsync(string id)
         {
             return await _userRepository.ExistsAsync(id);
         }

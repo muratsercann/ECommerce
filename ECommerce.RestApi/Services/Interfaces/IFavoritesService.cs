@@ -9,10 +9,10 @@ namespace ECommerce.RestApi.Services
        
         Task<IEnumerable<ProductSummaryDto>> GetFavoriteProductsSummaryDtoAsync(string userId);
 
-        Task<bool> AddToFavorites(string userId, string productId);
+        Task<bool> AddToFavoritesAsync(string userId, string productId);
 
-        Task<bool> RemoveFromFavorites(string userId, string productId);
+        Task<bool> RemoveFromFavoritesAsync(string userId, string productId);
 
-        Task<bool> RemoveAllFavorites(string userId);
+        Task<bool> RemoveAllFavoritesAsync(string userId);
     }
 }

@@ -6,19 +6,17 @@ namespace ECommerce.RestApi.Repositories
 {
     public class ProductRepository : Repository<Product>, IProductRepository
     {
-        private readonly ECommerceContext _mongoContext;
-        private readonly IMongoCollection<Product> _collection;
+        private readonly IMongoCollection<Product> _productCollection;
 
         public ProductRepository(ECommerceContext mongoContext) : base(mongoContext)
         {
-            _mongoContext = mongoContext;
-            _collection = _mongoContext.GetCollection<Product>();
+            _productCollection = mongoContext.Products;
         }
 
         public async Task<IEnumerable<TResult>> GetByCategoryAsync<TResult>(string categoryId, Expression<Func<Product, TResult>> selector)
         {
             var filter = Builders<Product>.Filter.Eq(p => p.CategoryId, categoryId);
-            var result = await _collection
+            var result = await _productCollection
                 .Find(filter)
                 .Project(selector).ToListAsync();
             return result;

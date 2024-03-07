@@ -2,157 +2,100 @@
 using ECommerce.RestApi.Models;
 using ECommerce.RestApi.Dto;
 using MongoDB.Driver;
+using ECommerce.RestApi.Repositories;
 
 namespace ECommerce.RestApi.Services
 {
     public class ShoppingCartService : IShoppingCartService
     {
-        private readonly ECommerceContext _mongoContext;
-        private readonly IMapper _mapper;
+        private readonly IShoppingCartRepository _shoppingCartRepository;
 
-        public ShoppingCartService(ECommerceContext mongoContext, IMapper mapper)
+        public ShoppingCartService(IShoppingCartRepository shoppingCartRepository)
         {
-            _mongoContext = mongoContext;
-            _mapper = mapper;
+            _shoppingCartRepository = shoppingCartRepository;
         }
 
-        private async Task<User> GetUserAsync(string id)
+        public async Task<ShoppingCartDto> GetShoppingCartAsync(string userId)
         {
-            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
-            var user = await _mongoContext.Users.Find(filter).FirstOrDefaultAsync();
-            return user;
-        }
+            var cart = await _shoppingCartRepository.GetShoppingCartAsync(userId);
 
-        public async Task<IEnumerable<ProductDto>> GetProductsInTheCartAsync(string userId)
-        {
-            var user = await GetUserAsync(userId);
-
-            if (user?.Cart?.Items is null || user.Cart.Items.Count == 0)
+            if ((cart?.Items?.Count ?? 0) == 0)
             {
-                return new List<ProductDto>();
-            }
-
-            var filter = Builders<Product>.Filter.In(p => p.Id, user.Cart.Items.Select(f => f.ProductId));
-            var products = await _mongoContext.Products.Find(filter).ToListAsync();
-            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
-            return productsDto;
-        }
-
-        public async Task<ShoppingCartDto> GetShoppingCartDtoAsync(string userId)
-        {
-            var user = await GetUserAsync(userId);
-
-            if (user is null || (user.Cart?.Items?.Count ?? 0) == 0)
-            {
+                //or return message
                 return new ShoppingCartDto();
             }
 
-            List<string> productIds = user.Cart.Items.Select(i => i.ProductId).ToList();
+            IEnumerable<string> productIds = cart.Items.Select(item => item.ProductId);
+            IEnumerable<ProductDto> products = await _shoppingCartRepository.GetProductsAsync(productIds, ProductDto.Selector);
 
-            var filter = Builders<Product>.Filter.In(p => p.Id, productIds);
-            var products = await _mongoContext.Products.Find(filter).ToListAsync();
+            var mergedList = cart.Items
+            .Join(products,
+                item => item.ProductId,
+                product => product.Id,
+                (item, product) => new ShoppingCartItemDto(product, item.Quantity, item.Quantity * product.Price))
+            .ToList();
 
-            IEnumerable<ProductDto> productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+            var totalPrice = mergedList.Sum(m => m.price);
 
-            decimal totalPrice = 0;
+            ShoppingCartDto cartDto = new ShoppingCartDto(
+                mergedList,
+                totalPrice,
+                cart.TotalItemQuantity);
 
-            List<ShoppingCartItemDto> items = new List<ShoppingCartItemDto>();
-
-            foreach (var item in user.Cart.Items)
-            {
-                ProductDto productDto = productDtos.Where(p => p.Id == item.ProductId).FirstOrDefault();
-                totalPrice += (productDto?.Price ?? 0) * item.Quantity;
-                items.Add(new ShoppingCartItemDto(productDto, item.Quantity));
-            }
-
-            ShoppingCartDto shoppingCartDto = new ShoppingCartDto(items, totalPrice, user.Cart.TotalItemCount);
-
-            return shoppingCartDto;
+            return cartDto;
         }
 
-        public async Task<ShoppingCart> UpdateCartAsync(string userId, ShoppingCart cart)
+        public async Task<bool> AddToCartAsync(AddToCartDto cartDto)
         {
-            var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
-            var update = Builders<User>.Update.Set(u => u.Cart, cart);
-            var result = await _mongoContext.Users.UpdateOneAsync(filter, update);
+            //msercan? : refactor..
+            var userCart = await _shoppingCartRepository.GetShoppingCartAsync(cartDto.userId);
 
-            return cart;
-        }
-
-        public async Task<ShoppingCart> GetUserCart(string userId)
-        {
-            var user = await GetUserAsync(userId);
-
-            if (user.Cart is null || user.Cart.Items == null || user.Cart.Items.Count == 0)
+            if (userCart is null)
             {
-                return new ShoppingCart();//???
-            }
-            var productIds = user.Cart.Items.Select(i => i.ProductId).ToList();
-            var filter = Builders<Product>.Filter.In(p => p.Id, productIds);
-            var cartProducts = await _mongoContext.Products.Find(filter).ToListAsync();
-            var totalPrice = cartProducts.Sum(p => p.Price * GetCartItemCount(user.Cart, p.Id));
-            user.Cart.TotalPrice = totalPrice;
-
-            return user.Cart;
-
-            int GetCartItemCount(ShoppingCart cart, string productId)
-            {
-                var item = cart.Items.Where(i => i.ProductId == productId).FirstOrDefault();
-                return item?.Quantity ?? 0;
-            }
-
-
-        }
-
-        public async Task<bool> AddToCartAsync(AddToCartDto addToCartObject)
-        {
-            var user = await GetUserAsync(addToCartObject.userId);
-
-            if (user is null)
-            {
+                //msercan : return message..
                 return false;
             }
 
-            var cartItem = user.Cart.Items.Where(item => item.ProductId == addToCartObject.productId).FirstOrDefault();
+            var cartItem = userCart.Items.Where(item => item.ProductId == cartDto.productId).FirstOrDefault();
 
             if (cartItem is not null)
             {
-                cartItem.Quantity += addToCartObject.quantity;
+                cartItem.Quantity += cartDto.quantity;
             }
 
             else
             {
-                user.Cart.Items.Add(new ShoppingCartItem
+                userCart.Items.Add(new ShoppingCartItem
                 {
-                    ProductId = addToCartObject.productId,
-                    Quantity = addToCartObject.quantity,
+                    ProductId = cartDto.productId,
+                    Quantity = cartDto.quantity,
                 });
+
             }
 
-            user.Cart.TotalItemCount = user.Cart.Items.Sum(item => item.Quantity);
+            userCart.TotalItemQuantity = userCart.Items.Sum(item => item.Quantity);
 
-            await UpdateCartAsync(addToCartObject.userId, user.Cart);
-
-            var updatedUser = await GetUserAsync(addToCartObject.userId);
+            await _shoppingCartRepository.UpdateShoppingCartAsync(cartDto.userId, userCart);
 
             return true;
         }
 
         public async Task<bool> RemoveFromCartAsync(AddToCartDto cartDto)
         {
-            var user = await GetUserAsync(cartDto.userId);
+            //msercan? : refactor..
+            var userCart = await _shoppingCartRepository.GetShoppingCartAsync(cartDto.userId);
 
-            if (user is null)
+            if (userCart is null)
             {
                 return false;
             }
 
-            if (user.Cart?.Items is null || user.Cart.Items.Count == 0)
+            if (userCart?.Items is null || userCart.Items.Count == 0)
             {
                 return false;
             }
 
-            var item = user.Cart.Items.Where(item => item.ProductId == cartDto.productId).FirstOrDefault();
+            var item = userCart.Items.Where(item => item.ProductId == cartDto.productId).FirstOrDefault();
 
             if (item is null)
             {
@@ -165,38 +108,37 @@ namespace ECommerce.RestApi.Services
             }
             else
             {
-                user.Cart.Items.Remove(item);
+                userCart.Items.Remove(item);
             }
 
-            user.Cart.TotalItemCount = user.Cart.Items.Sum(item => item.Quantity);
+            userCart.TotalItemQuantity = userCart.Items.Sum(item => item.Quantity);
 
-            await UpdateCartAsync(cartDto.userId, user.Cart);
+            var result = await _shoppingCartRepository.UpdateShoppingCartAsync(cartDto.userId, userCart);
 
-            var updatedUser = await GetUserAsync(cartDto.userId);
-
-            return true;
+            return result;
         }
-
 
         public async Task<bool> RemoveAllFromCartAsync(string userId)
         {
-            var user = await GetUserAsync(userId);
+            //msercan? : refactor..
+            var userCart = await _shoppingCartRepository.GetShoppingCartAsync(userId);
 
-            if (user is null)
+            if (userCart is null)
             {
                 return false;
             }
 
-            if (user.Cart?.Items is null || user.Cart.Items.Count == 0)
+            if (userCart?.Items is null || userCart.Items.Count == 0)
             {
                 return false;
             }
 
-            user.Cart.Items = new List<ShoppingCartItem>();
+            userCart.Items = new List<ShoppingCartItem>();
+            userCart.TotalItemQuantity = 0;
 
-            await UpdateCartAsync(userId, user.Cart);
+            var result = await _shoppingCartRepository.UpdateShoppingCartAsync(userId, userCart);
 
-            return true;
+            return result;
         }
     }
 }

@@ -12,9 +12,6 @@ namespace ECommerce.RestApi.Dto
     {
         public string Id { get; init; }
         public string Name { get; init; }
-        public string ParentId { get; init; }
-        public string Description { get; init; }
-
 
         public static Expression<Func<Category, CategoryDto>> Selector
         {
@@ -23,9 +20,7 @@ namespace ECommerce.RestApi.Dto
                 return category => new CategoryDto()
                 {
                     Id = category.Id,
-                    Name = category.Name,
-                    Description = category.Description,
-                    ParentId = category.ParentId,
+                    Name = category.Name
                 };
 
             }
